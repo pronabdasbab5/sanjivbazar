@@ -145,14 +145,11 @@
                   <li>
                     <a href="{{ route('home') }}"><i class="fa fa-home"></i> Home </a>
                   </li>
-                  <li><a><i class="fa fa-edit"></i> Manage Shop <span class="fa fa-chevron-down"></span></a>
+                  <li>
+                    <a><i class="fa fa-edit"></i> Manage Shop <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                        <li><a>Selling Commission<span class="fa fa-chevron-down"></span></a>
-                            <ul class="nav child_menu">
-                                <li><a href="#">New Shop</a></li>
-                                <li><a href="#">All Shop</a></li>
-                            </ul>
-                        </li>
+                        <li><a href="{{ route('newshop') }}">New Shop</a></li>
+                        <li><a href="{{ route('shoplist') }}">All Shops</a></li>
                     </ul>
                   </li> 
                   <li>
@@ -190,11 +187,11 @@
                             </li>
                           </ul>
                         </li>
-                        <li><a>Main Category<span class="fa fa-chevron-down"></span></a>
+                        <li><a>Top Category<span class="fa fa-chevron-down"></span></a>
                           <ul class="nav child_menu">
-                            <li><a href="#">New Main Category</a>
+                            <li><a href="#">New Top Category</a>
                             </li>
-                            <li><a href="#">All Main Category</a>
+                            <li><a href="#">All Top Category</a>
                             </li>
                           </ul>
                         </li>
@@ -221,6 +218,13 @@
                         <li><a href="#">Inactive Review</a></li>
                     </ul>
                   </li>
+                  <li>
+                    <a><i class="fa fa-edit"></i> Manage Employee <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                        <li><a href="#">New Employee</a></li>
+                        <li><a href="#">All Employees</a></li>
+                    </ul>
+                  </li> 
                   <li>
                     <a><i class="fa fa-edit"></i> Sliders <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
