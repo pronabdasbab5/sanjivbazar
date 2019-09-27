@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use App\Models\Topcategory\Topcategory;
+use Intervention\Image\ImageManagerStatic as Image;
 use File;
 use Response;
 
@@ -18,10 +19,10 @@ class TopcategoryController extends Controller
      */
     public function create()
     {
-        return view('auth.top_category.new_shop');
+        return view('auth.top_category.new_topcategory');
     }
 
-    public function add_new_main_category (Request $request) {
+    public function store (Request $request) {
 
     	$request->validate([
 	        'cate_name' => 'required',
@@ -32,20 +33,17 @@ class TopcategoryController extends Controller
             'icon.required' => 'Please ! Upload valid image.'
 	    ]);
 
-    	$main_category = new Maincategory;
+    	$top_category = new Topcategory;
+        $row_check    = $top_category->where('cate_name', $request->input('cate_name'))->count();
 
-        $row = $main_category->where('cate_name', $request->input('cate_name'))->count();
-
-        if ($row > 0) {
-            
-            return redirect()->route('new_main_category')->with('msg', 'Record already available.');
-        }
+        if ($row_check > 0)
+            return redirect()->route('newtopcategory')->with('msg', 'Record already available.');
         else {
 
             if($request->hasFile('icon')) {
 
-                $image        = $request->file('icon');
-                $file_name    = time().".jpg";
+                $image     = $request->file('icon');
+                $file_name = time().".jpg";
 
                 $image_resize = Image::make($image->getRealPath());              
                 $image_resize->resize(350, 200);
@@ -57,110 +55,92 @@ class TopcategoryController extends Controller
                     File::makeDirectory(public_path()."/assets/pro_cate_icon");
 
                 $image_resize->save(public_path("assets/pro_cate_icon/".$file_name));
+                $top_category->cate_name = ucwords(strtolower($request->input('cate_name')));
+                $top_category->img_path = $file_name;
+                $top_category->id = $top_category->count() + 1;
 
-                $main_category->cate_name = ucwords($request->input('cate_name'));
-
-                $main_category->img_path = $file_name;
-
-                $main_category->id = $main_category->count() + 1;
-
-                if($main_category->save()) {
-
-                    return redirect()->route('new_main_category')->with('msg', 'Category has been added successfully');
-                }
+                if($top_category->save()) 
+                    return redirect()->route('newtopcategory')->with('msg', 'Category has been added successfully');
                 else
-                    return redirect()->route('new_main_category')->with('msg', 'Something wrong while adding'); 
+                    return redirect()->route('newtopcategory')->with('msg', 'Something wrong while adding'); 
 
             } else
-                return redirect()->route('new_main_category')->with('msg', 'Please ! upload image.');  
+                return redirect()->route('newtopcategory')->with('msg', 'Please ! upload image.');  
         }
     }
 
-    public function all_main_category () {
+    public function index () {
 
-        $main_category = new Maincategory;
-
-        $main_category_data = $main_category->all();
+        $top_category      = new Topcategory;
+        $top_category_data = $top_category->all();
 
         $data = null;
 
-        foreach ($main_category_data as $key => $value) {
+        foreach ($top_category_data as $key => $value) {
 
             $url = route('pro_cate_image', ['filename' => $value['img_path']]);
             
             $data [] = [
-                "id" => $value['id'],
-                "cate_name" => $value['cate_name'],
-                "img_path" => $url,
-                "status" => $value['status'],
+                "id"         => $value['id'],
+                "cate_name"  => $value['cate_name'],
+                "img_path"   => $url,
+                "status"     => $value['status'],
                 "created_at" => $value['created_at']
             ];
         }
 
-        return view('admin.main_category.all_main_category', ['data' => $data]);
+        return view('auth.top_category.topcategorylist', ['data' => $data]);
     }
 
-    public function change_status_main_category($id) {
+    public function change_status($id) {
 
-        $main_category = new Maincategory;
-        $sub_category  = new Subcategory;
-        $products      = new Products;
+        $top_category = new Topcategory;
+        $top_category = $top_category->find($id);
 
-        $main_category = $main_category->find($id);
+        if($top_category->status == "0")
+            $top_category->update(['status' => "1"]);
+        else 
+            $top_category->update(['status' => "0"]);
 
-        if($main_category->status == "0") {
-
-            $main_category->update(['status' => "1"]);
-            $sub_category->where('pro_cate_id', $id)->update(['status' => "1"]);
-            $products->where('cate_id', $id)->update(['status' => "1"]);
-        }
-        else {
-
-            $main_category->update(['status' => "0"]);
-            $sub_category->where('pro_cate_id', $id)->update(['status' => "0"]);
-            $products->where('cate_id', $id)->update(['status' => "0"]);
-        }
-
-        $main_category_data = $main_category->all();
+        $top_category_data = $top_category->all();
 
         $data = null;
 
-        foreach ($main_category_data as $key => $value) {
+        foreach ($top_category_data as $key => $value) {
 
             $url = route('pro_cate_image', ['filename' => $value['img_path']]);
             
             $data [] = [
-                "id" => $value['id'],
-                "cate_name" => $value['cate_name'],
-                "img_path" => $url,
-                "status" => $value['status'],
+                "id"         => $value['id'],
+                "cate_name"  => $value['cate_name'],
+                "img_path"   => $url,
+                "status"     => $value['status'],
                 "created_at" => $value['created_at']
             ];
         }
 
-        return view('admin.main_category.all_main_category', ['data' => $data]);
+        return view('auth.top_category.topcategorylist', ['data' => $data]);
     }
 
-    public function single_record_main_category ($id) {
+    public function edit ($id) {
 
-        $main_category = new Maincategory;
+        $top_category = new Topcategory;
+        $top_category = $top_category->find($id);
 
-        $main_category = $main_category->find($id);
-
-        $url = route('pro_cate_image', ['filename' => $main_category->img_path]);
+        $url = route('pro_cate_image', ['filename' => $top_category->img_path]);
 
         $data = null;
             
         $data [] = [
-            "id" => $main_category->id,
-            "cate_name" => $main_category->cate_name,
-            "img_path" => $url
+            "id"        => $top_category->id,
+            "cate_name" => $top_category->cate_name,
+            "img_path"  => $url
         ];
 
-        return view('admin.main_category.single_record_main_category' , ['data' => $data]);
+        return view('auth.top_category.edit_topcategory_details', ['data' => $data]);
     }
 
-    public function single_record_main_category_update (Request $request, $cate_id) {
+    public function update (Request $request, $cate_id) {
 
         $request->validate([
             'cate_name' => 'required',
@@ -170,11 +150,10 @@ class TopcategoryController extends Controller
             'cate_name.required' => 'The main category is required',
         ]);
 
-        $main_category = new Maincategory;
+        $top_category = new Topcategory;
+        $row_check    = $top_category->where('cate_name', $request->input('cate_name'))->count();
 
-        $row = $main_category->where('cate_name', $request->input('cate_name'))->count();
-
-        if ($row > 0) {
+        if ($row_check > 0) {
 
             if($request->hasFile('icon')) {
 
@@ -195,9 +174,9 @@ class TopcategoryController extends Controller
 
                 $image_resize->save(public_path("assets/pro_cate_icon/".$file_name));
 
-                return redirect()->route('single_record_main_category', ['data' => $cate_id])->with('msg', 'Record has been updated successfully.');
+                return redirect('/updatetopcategory/'.$cate_id)->with('msg', 'Record has been updated successfully.');
             } else
-                return redirect()->route('single_record_main_category', ['data' => $cate_id])->with('msg', 'Record has been updated successfully.');
+                return redirect('/updatetopcategory/'.$cate_id)->with('msg', 'File is empty.');
         }
         else {
 
@@ -220,14 +199,14 @@ class TopcategoryController extends Controller
 
                 $image_resize->save(public_path("assets/pro_cate_icon/".$file_name));
 
-                $main_category->where('id', $cate_id)->update(['cate_name' => $request->input('cate_name')]);
+                $top_category->where('id', $cate_id)->update(['cate_name' => ucwords(strtolower($request->input('cate_name')))]);
 
-                return redirect()->route('single_record_main_category', ['data' => $cate_id])->with('msg', 'Record has been updated successfully.');
+                return redirect('/updatetopcategory/'.$cate_id)->with('msg', 'Record has been updated successfully.');
             } else{
 
-                $main_category->where('id', $cate_id)->update(['cate_name' => $request->input('cate_name')]);
+                $top_category->where('id', $cate_id)->update(['cate_name' => ucwords(strtolower($request->input('cate_name')))]);
 
-                return redirect()->route('single_record_main_category', ['data' => $cate_id])->with('msg', 'Record has been updated successfully.');
+                return redirect('/updatetopcategory/'.$cate_id)->with('msg', 'Record has been updated successfully.');
             }
         }
     }
@@ -243,7 +222,7 @@ class TopcategoryController extends Controller
 
         $file = File::get($path);
 
-        $type = File::mimeType($path);
+        $type = File::extension($path);
 
         $response = Response::make($file, 200);
 
