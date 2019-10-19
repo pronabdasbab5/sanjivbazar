@@ -123,9 +123,9 @@
 
             <!-- menu profile quick info -->
             <div class="profile clearfix">
-              <!-- <div class="profile_pic">
-                <img src="images/img.jpg" alt="..." class="img-circle profile_img">
-              </div> -->
+              <div class="profile_pic">
+                <img src="{{ asset('img/user.png') }}" alt="..." class="img-circle profile_img">
+              </div>
               <center>
                   <div class="profile_info">
                     <span>Welcome To,</span>
@@ -145,14 +145,11 @@
                   <li>
                     <a href="{{ route('home') }}"><i class="fa fa-home"></i> Home </a>
                   </li>
-                  <li><a><i class="fa fa-edit"></i> Manage Shop <span class="fa fa-chevron-down"></span></a>
+                  <li>
+                    <a><i class="fa fa-edit"></i> Manage Shop <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                        <li><a>Selling Commission<span class="fa fa-chevron-down"></span></a>
-                            <ul class="nav child_menu">
-                                <li><a href="#">New Shop</a></li>
-                                <li><a href="#">All Shop</a></li>
-                            </ul>
-                        </li>
+                        <li><a href="{{ route('newshop') }}">New Shop</a></li>
+                        <li><a href="{{ route('shoplist') }}">All Shops</a></li>
                     </ul>
                   </li> 
                   <li>
@@ -168,33 +165,41 @@
                     <ul class="nav child_menu">
                         <li><a>Products<span class="fa fa-chevron-down"></span></a>
                           <ul class="nav child_menu">
-                            <li><a href="#">New Product</a>
+                            <li><a href="{{ route('newproducts') }}">New Product</a>
                             </li>
                             <li><a href="#">All Products</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li><a>Size<span class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu">
+                            <li><a href="{{ route('newsize') }}">Manage Size</a>
+                            </li>
+                            <li><a href="{{ route('newmapping_size') }}">Mapping Size</a>
                             </li>
                           </ul>
                         </li>                        
                         <li><a>Brands<span class="fa fa-chevron-down"></span></a>
                           <ul class="nav child_menu">
-                            <li><a href="#">Manage Brand</a>
+                            <li><a href="{{ route('newbrands') }}">Manage Brand</a>
                             </li>
-                            <li><a href="#">Mapping Brand</a>
+                            <li><a href="{{ route('newmapping_brands') }}">Mapping Brand</a>
                             </li>
                           </ul>
                         </li>
                         <li><a>Sub-Category<span class="fa fa-chevron-down"></span></a>
                           <ul class="nav child_menu">
-                            <li><a href="#">New Sub-Category</a>
+                            <li><a href="{{ route('newsubcategory') }}">New Sub-Category</a>
                             </li>
-                            <li><a href="#">All Sub-Category</a>
+                            <li><a href="{{ route('subcategorylist') }}">All Sub-Category</a>
                             </li>
                           </ul>
                         </li>
-                        <li><a>Main Category<span class="fa fa-chevron-down"></span></a>
+                        <li><a>Top-Category<span class="fa fa-chevron-down"></span></a>
                           <ul class="nav child_menu">
-                            <li><a href="#">New Main Category</a>
+                            <li><a href="{{ route('newtopcategory') }}">New Top-Category</a>
                             </li>
-                            <li><a href="#">All Main Category</a>
+                            <li><a href="{{ route('topcategorylist') }}">All Top-Category</a>
                             </li>
                           </ul>
                         </li>
@@ -221,6 +226,13 @@
                         <li><a href="#">Inactive Review</a></li>
                     </ul>
                   </li>
+                  <li>
+                    <a><i class="fa fa-edit"></i> Manage Employee <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                        <li><a href="#">New Employee</a></li>
+                        <li><a href="#">All Employees</a></li>
+                    </ul>
+                  </li> 
                   <li>
                     <a><i class="fa fa-edit"></i> Sliders <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
@@ -264,7 +276,7 @@
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <img src="images/img.jpg" alt="">
+                    <img src="{{ asset('img/user.png') }}" alt="">
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -347,7 +359,7 @@
     <script src="{{ asset('/vendor/unisharp/laravel-ckeditor/adapters/jquery.js') }}"></script>
 
     <script>
-        $('#pro_desc').ckeditor();
+        $('.desc').ckeditor();
     </script>
 
     @yield('script')
